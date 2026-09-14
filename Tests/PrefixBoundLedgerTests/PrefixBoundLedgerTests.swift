@@ -101,7 +101,7 @@ final class PrefixBoundLedgerTests: XCTestCase {
         }
         XCTAssertEqual(status, 400)
         XCTAssertEqual(first, BlockPosition(messageIndex: 1, blockIndex: 0))
-        XCTAssertTrue(message.contains("prefix_mismatch"))
+        XCTAssertTrue(message.contains("prefix_binding_mismatch"))
 
         let dropped = PrefixValidator(policy: .dropBlock).validate(edited)
         XCTAssertEqual(dropped.transformations.count, 4)
@@ -159,6 +159,10 @@ final class PrefixBoundLedgerTests: XCTestCase {
             ThinkingBlock(id: "bad", summary: "", signature: "not-a-signature", producedBy: .fable51))
         guard case .rejected = PrefixValidator(policy: .error).validate(request) else {
             return XCTFail("malformed signature must be rejected")
+        }
+        // ...and prefix_mismatch_behavior does not apply to it.
+        guard case .rejected = PrefixValidator(policy: .dropBlock).validate(request) else {
+            return XCTFail("malformed signature must be rejected even under drop_block")
         }
     }
 }
