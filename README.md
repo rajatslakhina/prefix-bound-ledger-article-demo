@@ -20,7 +20,9 @@ This repo treats that rule as a *design constraint* instead of an error to catch
 - `LedgerDemoView` — a SwiftUI screen that lets you pick a naive edit, watch it fail, and apply the
   append-only mutation that replaces it.
 
-Article: (added after publish)
+Article: [Your Chat Transcript Is a Ledger Now. Seven of the Eleven Edits I Used to Make Return a 400.](https://medium.com/@er.rajatlakhina/your-chat-transcript-is-a-ledger-now-seven-of-the-eleven-edits-i-used-to-make-return-a-400-5adf4c7574bf) (Medium)
+
+![Header card: your chat transcript is a ledger now; four signed thinking blocks all invalidated by a system-prompt edit](Article/2026-09-14-prefix-bound-ledger-header.png)
 
 ## The idea in code
 
@@ -37,7 +39,7 @@ var edited = ledger.request
 edited.system += "\nAlways answer in metric units."
 
 PrefixValidator(policy: .error).validate(edited)
-// → .rejected(status: 400, "...prefix_mismatch", firstInvalid: message 1)
+// → .rejected(status: 400, "...prefix_binding_mismatch", firstInvalid: message 1)
 
 // The append-only path that says the same thing and keeps every block valid.
 try ledger.apply(.systemMessage("From now on, answer in metric units."))
