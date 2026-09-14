@@ -34,8 +34,8 @@ public enum Fixture {
             )
             ledger.recordToolResult(toolUseID: "toolu_2", content: "5:41, 5:37, 5:30 /km")
             ledger.recordAssistantTurn(
-                thinking: "Steady improvement, 17s faster than the average of the last three.",
-                blocks: [.text("Faster than all three: 5:24 vs 5:41, 5:37, 5:30. That's 12 s/km better than your best of them.")]
+                thinking: "Steady improvement, 12s faster than the average of the last three.",
+                blocks: [.text("Faster than all three: 5:24 vs 5:41, 5:37, 5:30. That's 6 s/km better than your best of them.")]
             )
         } catch {
             preconditionFailure("Fixture is static and must apply cleanly: \(error)")

@@ -11,12 +11,15 @@ public enum MismatchPolicy: String, CaseIterable, Sendable {
 /// One entry of the `input_transformations` array.
 public struct InputTransformation: Hashable, Sendable {
     public enum Reason: String, Sendable {
-        /// Something before the block changed.
-        case prefixMismatch = "prefix_mismatch"
-        /// An earlier thinking block that was present at signing time is gone.
+        /// Something before the block changed. Same string the API reports.
+        case prefixMismatch = "prefix_binding_mismatch"
+        /// Demo-internal refinement of `prefix_binding_mismatch`: an earlier
+        /// thinking block that was present at signing time is gone. The real
+        /// API folds this into `prefix_binding_mismatch`.
         case chainBroken = "chain_broken"
         /// The block was produced by a newer model than the one requested.
-        case modelMismatch = "model_mismatch"
+        /// Same string the API reports.
+        case modelMismatch = "model_binding_mismatch"
     }
 
     public let position: BlockPosition
@@ -73,10 +76,12 @@ public struct PrefixValidator: Sendable {
                 continue
             }
 
+            // A malformed or tampered signature is always a 400; the docs are
+            // explicit that `prefix_mismatch_behavior` does not apply to it.
             guard let parts = PrefixFingerprint.components(of: block.signature) else {
-                invalidFrom = position
-                transformations.append(.init(position: position, blockID: block.id, reason: .prefixMismatch))
-                continue
+                return .rejected(status: 400,
+                                 message: "Invalid `signature` in `thinking` block",
+                                 firstInvalid: position)
             }
 
             let expectedPrefix = PrefixFingerprint.prefixHash(of: request, before: position)
